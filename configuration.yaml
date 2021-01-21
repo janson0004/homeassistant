@@ -1,0 +1,31 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+homekit:
+- filter:
+    exclude_entities:
+      - media_player.kd_55x7000d      
+    exclude_domains:
+      - automation
+  # entity_config:
+  #   media_player.sony_bravia_tv:
+  #     name: Sony Bravia TV
+  #     feature_list:
+  #       - feature: on_off
+switch: !include switch.yaml
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+
+homeassistant:
+ packages: !include_dir_named packages
+
+
+

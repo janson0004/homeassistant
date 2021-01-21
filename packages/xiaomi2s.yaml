@@ -1,0 +1,95 @@
+#空气净化器
+fan:
+  - platform: xiaomi_miio
+    name: Xiaomi Air Purifier 2S
+    host: 
+    token:
+    model: zhimi.airpurifier.m1      
+#空气净化器部分
+sensor:
+  - platform: template
+    sensors:
+      xiaomi_ap_aqi:
+        friendly_name: 空氣質素
+        value_template: "{{ states.fan.xiaomi_air_purifier_2s.attributes.aqi }}"
+        unit_of_measurement: AQI
+      xiaomi_ap_temp:
+        friendly_name: 温度
+        value_template: "{{ states.fan.xiaomi_air_purifier_2s.attributes.temperature }}"
+        unit_of_measurement: °C
+      xiaomi_ap_humid:
+        friendly_name: 濕度
+        value_template: "{{ states.fan.xiaomi_air_purifier_2s.attributes.humidity }}"
+        unit_of_measurement: "%"
+      xiaomi_ap_lxh:
+        friendly_name: 滤芯已使用
+        value_template: "{{ states.fan.xiaomi_air_purifier_2s.attributes.filter_hours_used }}"
+        unit_of_measurement: 小时
+      xiaomi_ap_sylx:
+        friendly_name: 剩余滤芯
+        value_template: "{{ states.fan.xiaomi_air_purifier_2s.attributes.filter_life_remaining }}"
+        unit_of_measurement: "%"
+        
+
+
+input_select:
+  xiaomi_ap_mode:
+    name: 模式
+    icon: mdi:fan
+    options:
+      - 自动
+      - 睡眠
+      - 喜爱
+     
+automation:
+  - alias: xiaomi_ap_get_mode
+    initial_state: true
+    trigger:
+      platform: time_pattern
+      seconds: /5
+    action:
+      service: input_select.select_option
+      data_template:
+        entity_id: input_select.xiaomi_ap_mode
+        option: >
+          {% if states.fan.xiaomi_air_purifier_2s.attributes.mode == "auto" %}自动
+          {% elif states.fan.xiaomi_air_purifier_2s.attributes.mode == "silent" %}睡眠
+          {% elif states.fan.xiaomi_air_purifier_2s.attributes.mode == "favorite" %}喜爱
+          {% endif %}
+
+  - alias: xiaomi_ap_set_mode
+    initial_state: true
+    trigger:
+      platform: state
+      entity_id: input_select.xiaomi_ap_mode
+    action:
+      service: fan.turn_on
+      data_template:
+        entity_id: fan.xiaomi_air_purifier_2s
+        speed: >
+          {% if states.input_select.xiaomi_ap_mode.state == "自动" %}Auto
+          {% elif states.input_select.xiaomi_ap_mode.state == "睡眠" %}Silent
+          {% elif states.input_select.xiaomi_ap_mode.state == "喜爱" %}Favorite
+          {% endif %}
+
+homeassistant:
+  customize:
+    fan.xiaomi_air_purifier_2s:
+      friendly_name: 空氣清新機
+    #switch.xiaomi_ap_buzzer:
+      #icon: mdi:volume-high
+      #friendly_name: 提示聲
+    #switch.xiaomi_ap_light:
+      #icon: mdi:led-on
+      #friendly_name: 題示器
+    #switch.xiaomi_ap_childlock:
+      #icon: mdi:lock-open
+      #friendly_name: 兒童鎖
+    sensor.xiaomi_ap_aqi:
+      icon: mdi:blur
+    sensor.xiaomi_ap_humid:
+      icon: mdi:water-percent
+    sensor.xiaomi_ap_lxh:
+      icon: mdi:store-24-hour
+    sensor.xiaomi_ap_sylx:
+      icon: mdi:brightness-percent

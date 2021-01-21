@@ -1,0 +1,37 @@
+remote:
+  - platform: xiaomi_miio
+    host:
+    name: "xiaomi remote"
+    token:
+    timeout: 30
+    hidden: true
+    commands:
+      activate_fan_on:
+        command:
+          - raw:"mc1m8wlkzmkxmEsnIBBTKagEZNZhLJvOQEOmU1mgEXgRGAoQFTzcAMgB4AfcDmAU6AocElZwAgU2BB8JbwhfAa8ESphAAA=="
+      activate_fan_speed:
+        command:
+          - raw:"mc1mcwlkzmk1mEsnMxmEsmU1nABHTgB4gGfAIqcABlMptMAGvAI8AhgJynE0AHYFcwB6Ag8CCQD3AX8AcgfTnE2AHkEiAEDmEAA="    
+script:
+  fan_on:
+    sequence:
+      - service: remote.send_command
+        entity_id: 'remote.xiaomi_miio'
+        data:
+          command:
+            - "mc1m8wlkzmkxmEsnIBBTKagEZNZhLJvOQEOmU1mgEXgRGAoQFTzcAMgB4AfcDmAU6AocElZwAgU2BB8JbwhfAa8ESphAAA=="
+  fan_speed:
+    sequence:
+      - service: remote.send_command
+        entity_id: 'remote.xiaomi_miio'
+        data:
+          command:
+            - "mc1mcwlkzmk1mEsnMxmEsmU1nABHTgB4gGfAIqcABlMptMAGvAI8AhgJynE0AHYFcwB6Ag8CCQD3AX8AcgfTnE2AHkEiAEDmEAA="  
+homeassistant:
+  customize:
+    script.fan_on:
+      friendly_name: 開風線
+      homebridge_name: 開風線
+    script.fan_speed:
+      friendly_name: 改風速
+      homebridge_name: 改風速
